@@ -14,7 +14,7 @@ app.use('/uploads', express.static('uploads'));
 // =========================== END OF APP CONFIGURATION
 
 // ESTABLISHING THE MONGODB CONNECTION
-const uri = process.env.ATALS_URI
+const uri = process.env.ATLAS_URI
 mongoose.connect(uri, {}) 
 
 const connection = mongoose.connection

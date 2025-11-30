@@ -21,7 +21,20 @@ export default class CreateGrill extends Component {
 
   onChangeTitlu(e) { this.setState({ Titlu: e.target.value }); }
   onChangeDescriere(e) { this.setState({ Descriere: e.target.value }); }
-  onChangeImage(e) { this.setState({ Image: e.target.files[0] }); }
+  onChangeImage = (e) => {
+    const file = e.target.files[0];
+    
+    if (!file) return;
+    
+    const maxSize = 512 * 1024; // 512KB in bytes
+
+    if (file.size > maxSize) {
+        e.target.value = null; // Clear the input
+        alert("Image is too large! Maximum allowed size is 512KB.");
+        return;
+    }
+    this.setState({ Image: file });
+};
 
   onSubmit(e) {
     e.preventDefault();
@@ -37,28 +50,27 @@ export default class CreateGrill extends Component {
       .then(res => console.log(res.data))
       .catch(err => console.error(err));
 
-      window.location = '/profile';
+      window.location.reload();
   }
 
   render() {
     return (
       <div>
-        <h3>Create New Grill</h3>
         <form onSubmit={this.onSubmit}>
           <div className="form-group">
             <label>Title: </label>
             <input type="text" required className="form-control" value={this.state.Titlu} onChange={this.onChangeTitlu} />
           </div>
-          <div className="form-group">
+          <div className="form-group mt-3">
             <label>Description: </label>
             <textarea required className="form-control" value={this.state.Descriere} onChange={this.onChangeDescriere} />
           </div>
-          <div className="form-group">
+          <div className="form-group mt-3">
             <label>Image: </label>
-            <input type="file" className="form-control" onChange={this.onChangeImage} />
+            <input type="file" required className="form-control" onChange={this.onChangeImage} />
           </div>
-          <div className="form-group">
-            <input type="submit" value="Create Grill" className="btn btn-primary" />
+          <div className="form-group mt-3">
+            <input type="submit" value="Post Grill" className="btn btn-primary" style={{ backgroundColor: "rgba(29, 177, 41, 0.7)", borderColor: "rgba(0, 0, 0, 1)" , fontWeight: "bold"}} />
           </div>
         </form>
       </div>

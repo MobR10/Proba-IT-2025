@@ -1,6 +1,8 @@
 import React from 'react';
 import {BrowserRouter as Router,Routes,Route} from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 import Navbar from "./components/navbar.component";
 import Home from "./components/home.component";
@@ -10,12 +12,13 @@ import Register from "./components/register.component";
 
 import Profile from "./components/profile.component";
 import CreateGrill from './components/create-grill.component';
+import Footer from './components/footer.component';
 
 function App() {
 
   return (
     <Router>
-      <div className='container'>
+      <div>
       <Navbar/>
         <br/>
         <Routes>
@@ -26,6 +29,7 @@ function App() {
           <Route path="/profile" element={<Profile/>}/>
           <Route path="/createGrill" element={<CreateGrill/>}/>
         </Routes>
+        <Footer/>
       </div>
     </Router>
   )

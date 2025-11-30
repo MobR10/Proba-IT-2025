@@ -7,7 +7,7 @@ const grillSchema = new Schema({
     Descriere: { type: String, required: true },
     User: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     Rating:{ type: Number, required: false, default: 0 },
-    Image: { type: String, required: false },
+    Image: { type: String, required: true },
 },  {
     timestamps: true,
 })
