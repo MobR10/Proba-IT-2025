@@ -39,7 +39,7 @@ export default class Login extends Component {
 
     // Send login request to backend
     axios
-      .post("http://localhost:5000/users/login", user)
+      .post(`${import.meta.env.VITE_API_URL}/users/login`, user)
       .then((res) => {
         // Backend should return user info if login is successful
         if (res.data && res.data.user) {

@@ -26,11 +26,11 @@ export default class CreateGrill extends Component {
     
     if (!file) return;
     
-    const maxSize = 512 * 1024; // 512KB in bytes
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
 
     if (file.size > maxSize) {
         e.target.value = null; // Clear the input
-        alert("Image is too large! Maximum allowed size is 512KB.");
+        alert("Image is too large! Maximum allowed size is 5MB.");
         return;
     }
     this.setState({ Image: file });
@@ -46,7 +46,7 @@ export default class CreateGrill extends Component {
     formData.append("Rating", this.state.Rating);
     formData.append("Image", this.state.Image);
 
-    axios.post("http://localhost:5000/grills/add", formData)
+    axios.post(`${import.meta.env.VITE_API_URL}/grills/add`, formData)
       .then(res => console.log(res.data))
       .catch(err => console.error(err));
 

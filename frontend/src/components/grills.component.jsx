@@ -51,7 +51,7 @@ export default class Grills extends Component {
 
   fetchGrills = () => {
     axios
-      .get("http://localhost:5000/grills/")
+      .get(`${import.meta.env.VITE_API_URL}/grills/`)
       .then((response) => {
         this.setState({
           grills: response.data || [],
@@ -88,7 +88,7 @@ export default class Grills extends Component {
     if (!window.confirm("Are you sure you want to delete this grill?")) return;
 
     axios
-      .delete(`http://localhost:5000/grills/delete/${grillID}`)
+      .delete(`${import.meta.env.VITE_API_URL}/grills/delete/${grillID}`)
       .then(() => {
         this.setState((prevState) => ({
           grills: prevState.grills.filter((g) => g._id !== grillID),
@@ -207,7 +207,7 @@ export default class Grills extends Component {
                     <strong>User:</strong> {grill.User ? `${grill.User.Nume} ${grill.User.Prenume}` : "Unknown"}
                   </p>
                   <img
-                    src={`http://localhost:5000/uploads/${grill.Image}`}
+                    src={`${import.meta.env.VITE_API_URL}/uploads/${grill.Image}`}
                     alt={grill.Titlu}
                     className="card-img-top"
                     style={{ width: "100%", height: "180px", objectFit: "cover", borderRadius: "8px" }}
@@ -238,7 +238,7 @@ export default class Grills extends Component {
                     <strong>User:</strong> {grill.User ? `${grill.User.Nume} ${grill.User.Prenume}` : "Unknown"}
                   </p>
                   <img
-                    src={`http://localhost:5000/uploads/${grill.Image}`}
+                    src={`${import.meta.env.VITE_API_URL}/uploads/${grill.Image}`}
                     alt={grill.Titlu}
                     className="card-img-top"
                     style={{ width: "100%", height: "180px", objectFit: "cover", borderRadius: "8px" }}
@@ -284,7 +284,7 @@ export default class Grills extends Component {
                       <strong>User:</strong> {grill.User ? `${grill.User.Nume} ${grill.User.Prenume}` : "Unknown"}
                     </p>
                     <img
-                      src={`http://localhost:5000/uploads/${grill.Image}`}
+                      src={`${import.meta.env.VITE_API_URL}/uploads/${grill.Image}`}
                       alt={grill.Titlu}
                       className="card-img-top"
                       style={{ width: "100%", height: "100px", objectFit: "cover", borderRadius: "8px" }}
@@ -333,7 +333,7 @@ export default class Grills extends Component {
                       <strong>User:</strong> {grill.User ? `${grill.User.Nume} ${grill.User.Prenume}` : "Unknown"}
                     </p>
                     <img
-                      src={`http://localhost:5000/uploads/${grill.Image}`}
+                      src={`${import.meta.env.VITE_API_URL}/uploads/${grill.Image}`}
                       alt={grill.Titlu}
                       className="card-img-top"
                       style={{ width: "100%", height: "100px", objectFit: "cover", borderRadius: "8px" }}
@@ -370,18 +370,18 @@ export default class Grills extends Component {
                       <div className="d-none d-md-flex row">
                         <div className="col-md-5">
                           <img
-                            src={`http://localhost:5000/uploads/${selectedGrill.Image}`}
+                            src={`${import.meta.env.VITE_API_URL}/uploads/${selectedGrill.Image}`}
                             alt={selectedGrill.Titlu}
-                            style={{ width: "100%", height: "auto", objectFit: "cover", borderRadius: "5px" }}
+                            style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "5px" }}
                           />
                         </div>
                         <div className="col-md-7 d-flex flex-column justify-content-between">
                           <div>
                             <div className="d-flex justify-content-between align-items-start mb-3">
                               <div>
-                                <h4 style={{ wordWrap: "break-word" }}>{selectedGrill.Titlu}</h4>
-                                <p className="mb-0"><strong>User:</strong> {selectedGrill.User ? `${selectedGrill.User.Nume} ${selectedGrill.User.Prenume}` : "Unknown"}</p>
-                                <p className="mb-0"><strong>Rating:</strong> {selectedGrill.Rating} Mici</p>
+                                <h4 className="text-break">{selectedGrill.Titlu}</h4>
+                                <p className="mb-0 text-break"><strong>User:</strong> {selectedGrill.User ? `${selectedGrill.User.Nume} ${selectedGrill.User.Prenume}` : "Unknown"}</p>
+                                <p className="mb-0 text-break"><strong>Rating:</strong> {selectedGrill.Rating} Mici</p>
                               </div>
                               {isOwnerOrAdmin && (
                                 <div className="d-flex gap-2">
@@ -404,7 +404,7 @@ export default class Grills extends Component {
                             </div>
                             <div>
                               <h5>Description</h5>
-                              <p>{selectedGrill.Descriere}</p>
+                              <p className="text-break">{selectedGrill.Descriere}</p>
                             </div>
                           </div>
                         </div>
@@ -412,15 +412,15 @@ export default class Grills extends Component {
 
                       {/* Mobile */}
                       <div className="d-flex d-md-none flex-column">
-                        <h4>{selectedGrill.Titlu}</h4>
-                        <p><strong>User:</strong> {selectedGrill.User ? `${selectedGrill.User.Nume} ${selectedGrill.User.Prenume}` : "Unknown"}</p>
+                        <h4 className="text-break">{selectedGrill.Titlu}</h4>
+                        <p className="text-break"><strong>User:</strong> {selectedGrill.User ? `${selectedGrill.User.Nume} ${selectedGrill.User.Prenume}` : "Unknown"}</p>
                         <img
-                          src={`http://localhost:5000/uploads/${selectedGrill.Image}`}
+                          src={`${import.meta.env.VITE_API_URL}/uploads/${selectedGrill.Image}`}
                           alt={selectedGrill.Titlu}
-                          style={{ width: "100%", height: "200px", objectFit: "cover", borderRadius: "5px", marginBottom: "10px" }}
+                          style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "5px", marginBottom: "10px" }}
                         />
                         <div className="d-flex justify-content-between align-items-center mb-3">
-                          <p className="mb-0"><strong>Rating:</strong> {selectedGrill.Rating} Mici</p>
+                          <p className="mb-0 text-break"><strong>Rating:</strong> {selectedGrill.Rating} Mici</p>
                           {isOwnerOrAdmin && (
                             <div className="d-flex flex-column flex-md-row gap-2">
                               <button
@@ -442,7 +442,7 @@ export default class Grills extends Component {
                         </div>
                         <div>
                           <h5>Description</h5>
-                          <p>{selectedGrill.Descriere}</p>
+                          <p className="text-break">{selectedGrill.Descriere}</p>
                         </div>
                       </div>
                     </div>

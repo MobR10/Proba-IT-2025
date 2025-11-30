@@ -28,7 +28,7 @@ export default class EditGrill extends Component {
 
   fetchGrillData = (grillID) => {
     axios
-      .get(`http://localhost:5000/grills/findById/${grillID}`)
+      .get(`${import.meta.env.VITE_API_URL}/grills/findById/${grillID}`)
       .then((res) => {
         this.setState({
           defaultGrillData: res.data,
@@ -48,10 +48,10 @@ export default class EditGrill extends Component {
     const file = e.target.files[0];
     if (!file) return;
 
-    const maxSize = 512 * 1024;
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
     if (file.size > maxSize) {
       e.target.value = null;
-      alert("Image is too large! Maximum allowed size is 512KB.");
+      alert("Image is too large! Maximum allowed size is 5MB.");
       return;
     }
     this.setState({ Image: file });
@@ -67,7 +67,7 @@ export default class EditGrill extends Component {
     formData.append("Rating", this.state.Rating);
     if (this.state.Image) formData.append("Image", this.state.Image);
 
-    const url =`http://localhost:5000/grills/edit/${this.props.grillID}`
+    const url =`${import.meta.env.VITE_API_URL}/grills/edit/${this.props.grillID}`
 
 
     axios

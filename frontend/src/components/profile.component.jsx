@@ -25,14 +25,14 @@ export default class Profile extends Component {
 
   fetchUser = () => {
     axios
-      .get(`http://localhost:5000/users/findById/${this.state.userID}`)
+      .get(`${import.meta.env.VITE_API_URL}/users/findById/${this.state.userID}`)
       .then((res) => this.setState({ user: res.data }))
       .catch((err) => console.error(err));
   };
 
   fetchGrills = () => {
     axios
-      .get(`http://localhost:5000/grills/getUserGrills/${this.state.userID}`)
+      .get(`${import.meta.env.VITE_API_URL}/grills/getUserGrills/${this.state.userID}`)
       .then((res) => this.setState({ grills: res.data }))
       .catch((err) => console.error(err));
   };
@@ -48,7 +48,7 @@ export default class Profile extends Component {
   deleteGrill = (grillID) => {
     if (!window.confirm("Are you sure you want to delete this grill?")) return;
     axios
-      .delete(`http://localhost:5000/grills/delete/${grillID}`)
+      .delete(`${import.meta.env.VITE_API_URL}/grills/delete/${grillID}`)
       .then(() => {
         this.fetchGrills();
         this.closeModal();
@@ -141,7 +141,7 @@ export default class Profile extends Component {
                 onClick={() => this.openGrillModal(grill, false)}
               >
                 <img
-                  src={`http://localhost:5000/uploads/${grill.Image}`}
+                  src={`${import.meta.env.VITE_API_URL}/uploads/${grill.Image}`}
                   alt={grill.Titlu}
                   className="card-img-top"
                   style={{ width: "100%", height: "180px", objectFit: "cover" }}
@@ -188,7 +188,7 @@ export default class Profile extends Component {
                     onClick={() => this.openGrillModal(grill, false)}
                   >
                     <img
-                      src={`http://localhost:5000/uploads/${grill.Image}`}
+                      src={`${import.meta.env.VITE_API_URL}/uploads/${grill.Image}`}
                       alt={grill.Titlu}
                       className="card-img-top"
                       style={{
@@ -241,7 +241,7 @@ export default class Profile extends Component {
                     <div className="d-none d-md-flex row">
                       <div className="col-md-5">
                         <img
-                          src={`http://localhost:5000/uploads/${selectedGrill.Image}`}
+                          src={`${import.meta.env.VITE_API_URL}/uploads/${selectedGrill.Image}`}
                           alt={selectedGrill.Titlu}
                           style={{
                             width: "100%",
@@ -321,11 +321,11 @@ export default class Profile extends Component {
                         <strong>User:</strong> {user.Nume} {user.Prenume}
                       </p>
                       <img
-                        src={`http://localhost:5000/uploads/${selectedGrill.Image}`}
+                        src={`${import.meta.env.VITE_API_URL}/uploads/${selectedGrill.Image}`}
                         alt={selectedGrill.Titlu}
                         style={{
                           width: "100%",
-                          height: "200px",
+                          height: "auto",
                           objectFit: "cover",
                           borderRadius: "5px",
                           marginBottom: "10px",
