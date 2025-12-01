@@ -83,10 +83,10 @@ export default class Register extends Component {
   }
   render() {
     return (
-      <div className="container py-5">
+      <div className="container mt-2 mb-2">
         <form
           onSubmit={this.onSubmit}
-          className="text-white p-5 rounded mx-auto mt-5"
+          className="text-white p-5 rounded mx-auto"
           style={{
             maxWidth: "500px",
             backgroundColor: "rgba(99, 1, 1, 1)", // red background

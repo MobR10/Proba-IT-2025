@@ -50,7 +50,7 @@ export default class CreateGrill extends Component {
       .then(res => console.log(res.data))
       .catch(err => console.error(err));
 
-      window.location.reload();
+      // window.location.reload();
   }
 
   render() {

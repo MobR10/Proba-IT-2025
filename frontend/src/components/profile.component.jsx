@@ -83,7 +83,7 @@ export default class Profile extends Component {
     const mobileGrills = grills.slice(mobileIndex, mobileIndex + 2);
 
     return (
-      <div className="container pt-5">
+      <div className="container mt-3 mb-3">
         {/* User Info + Button */}
         <div className="row mb-4 align-items-center">
           <div className="col-12 col-md-6">

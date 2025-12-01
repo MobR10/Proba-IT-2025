@@ -1,31 +1,29 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
-
+import { NavLink } from "react-router-dom";
 
 export default class Navbar extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       loggedIn: localStorage.getItem("loggedIn") === "true",
       userID: localStorage.getItem("userID") || null,
     };
-
-    this.handleLogout = this.handleLogout.bind(this);
   }
 
-  handleLogout() {
+  handleLogout = () => {
     localStorage.removeItem("loggedIn");
     localStorage.removeItem("userID");
+    localStorage.removeItem("userRole");
     this.setState({ loggedIn: false, userID: null });
     window.location = "/";
-  }
+  };
 
+  // Collapse the navbar on mobile
   collapseNavbar = () => {
     const navbar = document.getElementById("navbarResponsive");
     if (navbar.classList.contains("show")) {
-      const bsCollapse = new window.bootstrap.Collapse(navbar, { toggle: false });
-      bsCollapse.hide();
+      const bsCollapse = bootstrap.Collapse.getInstance(navbar);
+      if (bsCollapse) bsCollapse.hide();
     }
   };
 
@@ -33,12 +31,21 @@ export default class Navbar extends Component {
     const { loggedIn } = this.state;
 
     return (
-      <nav className="navbar navbar-expand-md navbar-dark  rounded-bottom fixed-top" style={{backgroundColor: "rgba(99, 1, 1, 1)"}}>
-        <div className="container-fluid" >
-          <Link to="/" className="navbar-brand" onClick={this.collapseNavbar}>
+      <nav
+        className="navbar navbar-expand-md navbar-dark rounded-bottom"
+        style={{ backgroundColor: "rgba(99, 1, 1, 1)" }}
+      >
+        <div className="container-fluid">
+          {/* Brand / Home link */}
+          <NavLink
+            to="/"
+            className="navbar-brand"
+            onClick={this.collapseNavbar} // <-- fixed
+          >
             Pimp Your Grill
-          </Link>
+          </NavLink>
 
+          {/* Mobile toggler */}
           <button
             className="navbar-toggler"
             type="button"
@@ -51,41 +58,62 @@ export default class Navbar extends Component {
             <span className="navbar-toggler-icon"></span>
           </button>
 
+          {/* Nav links */}
           <div className="collapse navbar-collapse" id="navbarResponsive">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
-                <Link to="/grills" className="nav-link" onClick={this.collapseNavbar}>
+                <NavLink
+                  to="/grills"
+                  className="nav-link"
+                  onClick={this.collapseNavbar} // collapse on mobile
+                >
                   Best Grills
-                </Link>
+                </NavLink>
               </li>
 
               {loggedIn ? (
                 <>
                   <li className="nav-item">
-                    <Link to="/profile" className="nav-link" onClick={this.collapseNavbar}>
+                    <NavLink
+                      to="/profile"
+                      className="nav-link"
+                      onClick={this.collapseNavbar} // collapse on mobile
+                    >
                       Profile
-                    </Link>
+                    </NavLink>
                   </li>
                   <li className="nav-item">
-                    <button
-                      className="btn btn-link nav-link"
-                      onClick={() => { this.handleLogout(); this.collapseNavbar(); }}
+                    <span
+                      className="nav-link"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => {
+                        this.handleLogout();
+                        this.collapseNavbar();
+                      }}
                     >
                       Logout
-                    </button>
+                    </span>
                   </li>
                 </>
               ) : (
                 <>
                   <li className="nav-item">
-                    <Link to="/login" className="nav-link" onClick={this.collapseNavbar}>
+                    <NavLink
+                      to="/login"
+                      className="nav-link"
+                      onClick={this.collapseNavbar} // collapse on mobile
+                    >
                       Login
-                    </Link>
+                    </NavLink>
                   </li>
                   <li className="nav-item">
-                    <Link to="/register" className="nav-link" onClick={this.collapseNavbar}>
+                    <NavLink
+                      to="/register"
+                      className="nav-link"
+                      onClick={this.collapseNavbar} // collapse on mobile
+                    >
                       Register
-                    </Link>
+                    </NavLink>
                   </li>
                 </>
               )}

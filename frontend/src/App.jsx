@@ -18,9 +18,10 @@ function App() {
 
   return (
     <Router>
-      <div>
+      <div className='d-flex flex-column min-vh-100'>
       <Navbar/>
-        <br/>
+
+        <main className='flex-grow-1'>
         <Routes>
           <Route path="/" exact element={<Home/>}/>
           <Route path="/grills" element={<Grills/>}/>
@@ -29,6 +30,7 @@ function App() {
           <Route path="/profile" element={<Profile/>}/>
           <Route path="/createGrill" element={<CreateGrill/>}/>
         </Routes>
+        </main> 
         <Footer/>
       </div>
     </Router>
