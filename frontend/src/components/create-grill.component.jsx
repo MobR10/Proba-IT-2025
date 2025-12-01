@@ -31,7 +31,6 @@ export default class CreateGrill extends Component {
 
     if (file.size > maxSize) {
         e.target.value = null; // Clear the input
-        confirm("salut");
         alert("Image is too large! Maximum allowed size is 5MB.");
         return;
     }
