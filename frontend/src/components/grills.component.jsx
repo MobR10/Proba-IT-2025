@@ -19,7 +19,7 @@ export default class Grills extends Component {
     };
 
     this.loggedInUserID = localStorage.getItem("userID");
-    this.userRole = localStorage.getItem("userRole"); // "admin" or "user"
+    this.userRole = localStorage.getItem("userRole");
 
     this.searchBarRef = React.createRef();
   }
@@ -107,36 +107,41 @@ export default class Grills extends Component {
 
     axios
       .post(`${import.meta.env.VITE_API_URL}/grills/increaseRating/${grill._id}`)
-      .then(() => window.location.reload())
+      .then(() => {
+        this.closeModal()
+        this.fetchGrills()
+      })
       .catch((err) => console.error("Error increasing rating:", err));
   };
 
+  // --- FIX: MOBILE CAROUSEL ADVANCES BY ONE AT A TIME ---
   prevAll = () => {
     const { filteredGrills, currentIndexAll } = this.state;
     if (filteredGrills.length === 0) return;
     const newIndex =
-      (currentIndexAll - 2 + filteredGrills.length) % filteredGrills.length;
+      (currentIndexAll - 1 + filteredGrills.length) % filteredGrills.length;
     this.setState({ currentIndexAll: newIndex });
   };
 
   nextAll = () => {
     const { filteredGrills, currentIndexAll } = this.state;
     if (filteredGrills.length === 0) return;
-    const newIndex = (currentIndexAll + 2) % filteredGrills.length;
+    const newIndex = (currentIndexAll + 1) % filteredGrills.length;
     this.setState({ currentIndexAll: newIndex });
   };
 
   prevTop = (topGrills) => {
     const { currentIndexTop } = this.state;
     if (topGrills.length === 0) return;
-    const newIndex = (currentIndexTop - 2 + topGrills.length) % topGrills.length;
+    const newIndex =
+      (currentIndexTop - 1 + topGrills.length) % topGrills.length;
     this.setState({ currentIndexTop: newIndex });
   };
 
   nextTop = (topGrills) => {
     const { currentIndexTop } = this.state;
     if (topGrills.length === 0) return;
-    const newIndex = (currentIndexTop + 2) % topGrills.length;
+    const newIndex = (currentIndexTop + 1) % topGrills.length;
     this.setState({ currentIndexTop: newIndex });
   };
 
@@ -155,14 +160,16 @@ export default class Grills extends Component {
     const topGrills = [...filteredGrills]
       .sort((a, b) => b.Rating - a.Rating)
       .slice(0, 6);
-    const currentMobileAll = filteredGrills.slice(
-      currentIndexAll,
-      currentIndexAll + 2
-    );
-    const currentMobileTop = topGrills.slice(
-      currentIndexTop,
-      currentIndexTop + 2
-    );
+
+    const currentMobileAll = [
+      filteredGrills[currentIndexAll],
+      filteredGrills[(currentIndexAll + 1) % filteredGrills.length],
+    ].filter(Boolean);
+
+    const currentMobileTop = [
+      topGrills[currentIndexTop],
+      topGrills[(currentIndexTop + 1) % topGrills.length],
+    ].filter(Boolean);
 
     const isOwnerOrAdmin =
       this.userRole === "admin" ||
@@ -175,10 +182,7 @@ export default class Grills extends Component {
           ref={this.searchBarRef}
           className="mb-4 d-flex justify-content-center"
         >
-          <div
-            style={{ maxWidth: "400px", width: "100%" }}
-            className="position-relative"
-          >
+          <div style={{ maxWidth: "400px", width: "100%" }} className="position-relative">
             <input
               type="text"
               className="form-control rounded-pill ps-4 pe-5"
@@ -200,20 +204,10 @@ export default class Grills extends Component {
           </div>
         </div>
 
-        {/* Desktop / Medium */}
+        {/* Desktop Layout */}
         <div className="row d-none d-md-flex">
-          {/* Left: all grills */}
-          <div
-            className="col-md-8"
-            style={{
-              backgroundColor: "rgba(99,1,1,1)",
-              padding: "10px",
-              borderRadius: "10px",
-            }}
-          >
-            <h5 className="mb-3" style={{ color: "white" }}>
-              Grills for pimps
-            </h5>
+          <div className="col-md-8" style={{ backgroundColor: "rgba(99,1,1,1)", padding: "10px", borderRadius: "10px" }}>
+            <h5 className="mb-3" style={{ color: "white" }}>Grills for pimps</h5>
             <div className="row g-3">
               {filteredGrills.map((grill, index) => (
                 <div key={index} className="col-12 col-sm-6">
@@ -223,30 +217,18 @@ export default class Grills extends Component {
                     onClick={() => this.openGrillModal(grill)}
                   >
                     <p className="mt-2">
-                      <strong>User:</strong>{" "}
-                      {grill.User
-                        ? `${grill.User.Nume} ${grill.User.Prenume}`
-                        : "Unknown"}
+                      <strong>User:</strong> {grill.User ? `${grill.User.Nume} ${grill.User.Prenume}` : "Unknown"}
                     </p>
                     <img
                       src={`${import.meta.env.VITE_API_URL}/uploads/${grill.Image}`}
                       alt={grill.Titlu}
                       className="card-img-top"
-                      style={{
-                        width: "100%",
-                        height: "180px",
-                        objectFit: "cover",
-                        borderRadius: "8px",
-                      }}
+                      style={{ width: "100%", height: "180px", objectFit: "cover", borderRadius: "8px" }}
                     />
                     <div className="card-body">
                       <h4 className="card-title">{grill.Titlu}</h4>
-                      <p>
-                        <strong>Rating:</strong> {grill.Rating} Mici
-                      </p>
-                      <p>
-                        <strong>Description:</strong> {grill.Descriere}
-                      </p>
+                      <p><strong>Rating:</strong> {grill.Rating} Mici</p>
+                      <p><strong>Description:</strong> {grill.Descriere}</p>
                     </div>
                   </div>
                 </div>
@@ -254,18 +236,8 @@ export default class Grills extends Component {
             </div>
           </div>
 
-          {/* Right: top 6 grills */}
-          <div
-            className="col-md-4"
-            style={{
-              backgroundColor: "rgba(99,1,1,1)",
-              padding: "10px",
-              borderRadius: "10px",
-            }}
-          >
-            <h5 className="mb-3" style={{ color: "white" }}>
-              THE BEST GRILLS
-            </h5>
+          <div className="col-md-4" style={{ backgroundColor: "rgba(99,1,1,1)", padding: "10px", borderRadius: "10px" }}>
+            <h5 className="mb-3" style={{ color: "white" }}>THE BEST GRILLS</h5>
             <div className="row g-3">
               {topGrills.map((grill, index) => (
                 <div key={index} className="col-12">
@@ -275,30 +247,18 @@ export default class Grills extends Component {
                     onClick={() => this.openGrillModal(grill)}
                   >
                     <p className="mt-2">
-                      <strong>User:</strong>{" "}
-                      {grill.User
-                        ? `${grill.User.Nume} ${grill.User.Prenume}`
-                        : "Unknown"}
+                      <strong>User:</strong> {grill.User ? `${grill.User.Nume} ${grill.User.Prenume}` : "Unknown"}
                     </p>
                     <img
                       src={`${import.meta.env.VITE_API_URL}/uploads/${grill.Image}`}
                       alt={grill.Titlu}
                       className="card-img-top"
-                      style={{
-                        width: "100%",
-                        height: "180px",
-                        objectFit: "cover",
-                        borderRadius: "8px",
-                      }}
+                      style={{ width: "100%", height: "180px", objectFit: "cover", borderRadius: "8px" }}
                     />
                     <div className="card-body">
                       <h4 className="card-title">{grill.Titlu}</h4>
-                      <p>
-                        <strong>Rating:</strong> {grill.Rating} Mici
-                      </p>
-                      <p>
-                        <strong>Description:</strong> {grill.Descriere}
-                      </p>
+                      <p><strong>Rating:</strong> {grill.Rating} Mici</p>
+                      <p><strong>Description:</strong> {grill.Descriere}</p>
                     </div>
                   </div>
                 </div>
@@ -309,141 +269,73 @@ export default class Grills extends Component {
 
         {/* Mobile Sliders */}
         <div className="d-flex d-md-none flex-column align-items-center gap-4">
-          {/* Top 6 first */}
           {currentMobileTop.length > 0 && (
             <>
-              <h5
-                className="text-center"
-                style={{
-                  backgroundColor: "rgba(99, 1, 1, 1)",
-                  padding: "10px",
-                  borderRadius: "10px",
-                  color: "white",
-                }}
-              >
+              <h5 className="text-center" style={{ backgroundColor: "rgba(99,1,1,1)", padding: "10px", borderRadius: "10px", color: "white" }}>
                 THE BEST GRILLS
               </h5>
               <div className="d-flex align-items-center gap-2 mt-2">
-                <button
-                  className="btn btn-outline-secondary"
-                  onClick={() => this.prevTop(topGrills)}
-                >
+                <button className="btn btn-outline-secondary" onClick={() => this.prevTop(topGrills)}>
                   <i className="bi bi-chevron-left"></i>
                 </button>
-                <div
-                  className="d-flex gap-2"
-                  style={{
-                    backgroundColor: "rgba(99,1,1,1)",
-                    padding: "10px",
-                    borderRadius: "10px",
-                  }}
-                >
+
+                <div className="d-flex gap-2" style={{ backgroundColor: "rgba(99,1,1,1)", padding: "10px", borderRadius: "10px" }}>
                   {currentMobileTop.map((grill, idx) => (
-                    <div
-                      key={idx}
-                      className="card shadow-sm text-center"
-                      style={{ width: "120px", cursor: "pointer" }}
-                      onClick={() => this.openGrillModal(grill)}
-                    >
+                    <div key={idx} className="card shadow-sm text-center" style={{ width: "120px", cursor: "pointer" }} onClick={() => this.openGrillModal(grill)}>
                       <p className="mt-2" style={{ fontSize: "12px" }}>
-                        <strong>User:</strong>{" "}
-                        {grill.User
-                          ? `${grill.User.Nume} ${grill.User.Prenume}`
-                          : "Unknown"}
+                        <strong>User:</strong> {grill.User ? `${grill.User.Nume} ${grill.User.Prenume}` : "Unknown"}
                       </p>
                       <img
                         src={`${import.meta.env.VITE_API_URL}/uploads/${grill.Image}`}
                         alt={grill.Titlu}
                         className="card-img-top"
-                        style={{
-                          width: "100%",
-                          height: "100px",
-                          objectFit: "cover",
-                          borderRadius: "8px",
-                        }}
+                        style={{ width: "100%", height: "100px", objectFit: "cover", borderRadius: "8px" }}
                       />
                       <div className="card-body">
-                        <h5 className="card-title" style={{ fontSize: "14px" }}>
-                          {grill.Titlu}
-                        </h5>
-                        <p style={{ fontSize: "12px" }}>
-                          <strong>Rating:</strong> {grill.Rating} Mici
-                        </p>
+                        <h5 className="card-title" style={{ fontSize: "14px" }}>{grill.Titlu}</h5>
+                        <p style={{ fontSize: "12px" }}><strong>Rating:</strong> {grill.Rating} Mici</p>
                       </div>
                     </div>
                   ))}
                 </div>
-                <button
-                  className="btn btn-outline-secondary"
-                  onClick={() => this.nextTop(topGrills)}
-                >
+
+                <button className="btn btn-outline-secondary" onClick={() => this.nextTop(topGrills)}>
                   <i className="bi bi-chevron-right"></i>
                 </button>
               </div>
             </>
           )}
 
-          {/* All grills second */}
           {currentMobileAll.length > 0 && (
             <>
-              <h5
-                className="text-center mt-3"
-                style={{
-                  backgroundColor: "rgba(99, 1, 1, 1)",
-                  padding: "10px",
-                  borderRadius: "10px",
-                  color: "white",
-                }}
-              >
+              <h5 className="text-center mt-3" style={{ backgroundColor: "rgba(99,1,1,1)", padding: "10px", borderRadius: "10px", color: "white" }}>
                 Grills for pimps
               </h5>
               <div className="d-flex align-items-center gap-2 mt-2">
                 <button className="btn btn-outline-secondary" onClick={this.prevAll}>
                   <i className="bi bi-chevron-left"></i>
                 </button>
-                <div
-                  className="d-flex gap-2"
-                  style={{
-                    backgroundColor: "rgba(99,1,1,1)",
-                    padding: "10px",
-                    borderRadius: "10px",
-                  }}
-                >
+
+                <div className="d-flex gap-2" style={{ backgroundColor: "rgba(99,1,1,1)", padding: "10px", borderRadius: "10px" }}>
                   {currentMobileAll.map((grill, idx) => (
-                    <div
-                      key={idx}
-                      className="card shadow-sm text-center"
-                      style={{ width: "120px", cursor: "pointer" }}
-                      onClick={() => this.openGrillModal(grill)}
-                    >
+                    <div key={idx} className="card shadow-sm text-center" style={{ width: "120px", cursor: "pointer" }} onClick={() => this.openGrillModal(grill)}>
                       <p className="mt-2" style={{ fontSize: "12px" }}>
-                        <strong>User:</strong>{" "}
-                        {grill.User
-                          ? `${grill.User.Nume} ${grill.User.Prenume}`
-                          : "Unknown"}
+                        <strong>User:</strong> {grill.User ? `${grill.User.Nume} ${grill.User.Prenume}` : "Unknown"}
                       </p>
                       <img
                         src={`${import.meta.env.VITE_API_URL}/uploads/${grill.Image}`}
                         alt={grill.Titlu}
                         className="card-img-top"
-                        style={{
-                          width: "100%",
-                          height: "100px",
-                          objectFit: "cover",
-                          borderRadius: "8px",
-                        }}
+                        style={{ width: "100%", height: "100px", objectFit: "cover", borderRadius: "8px" }}
                       />
                       <div className="card-body">
-                        <h5 className="card-title" style={{ fontSize: "14px" }}>
-                          {grill.Titlu}
-                        </h5>
-                        <p style={{ fontSize: "12px" }}>
-                          <strong>Rating:</strong> {grill.Rating} Mici
-                        </p>
+                        <h5 className="card-title" style={{ fontSize: "14px" }}>{grill.Titlu}</h5>
+                        <p style={{ fontSize: "12px" }}><strong>Rating:</strong> {grill.Rating} Mici</p>
                       </div>
                     </div>
                   ))}
                 </div>
+
                 <button className="btn btn-outline-secondary" onClick={this.nextAll}>
                   <i className="bi bi-chevron-right"></i>
                 </button>
@@ -452,78 +344,50 @@ export default class Grills extends Component {
           )}
         </div>
 
-        {/* Modal */}
+        {/* Modal Render */}
         {selectedGrill && (
           <>
-            <div
-              className={`modal fade ${showModal ? "show d-block" : "d-none"}`}
-              tabIndex="-1"
-            >
+            <div className={`modal fade ${showModal ? "show d-block" : "d-none"}`} tabIndex="-1">
               <div className="modal-dialog modal-dialog-centered modal-lg">
                 <div className="modal-content">
-                  {/* VIEW MODE */}
                   {!editMode && (
                     <>
                       <div className="modal-header">
-                        <button
-                          type="button"
-                          className="btn-close"
-                          onClick={this.closeModal}
-                        ></button>
+                        <button type="button" className="btn-close" onClick={this.closeModal}></button>
                       </div>
                       <div className="modal-body">
-                        {/* Desktop */}
+                        {/* Desktop View */}
                         <div className="d-none d-md-flex row">
                           <div className="col-md-5">
                             <img
                               src={`${import.meta.env.VITE_API_URL}/uploads/${selectedGrill.Image}`}
                               alt={selectedGrill.Titlu}
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
-                                borderRadius: "5px",
-                              }}
+                              style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "5px" }}
                             />
                           </div>
+
                           <div className="col-md-7 d-flex flex-column justify-content-between">
                             <div>
                               <div className="d-flex justify-content-between align-items-start mb-3">
                                 <div>
                                   <h4 className="text-break">{selectedGrill.Titlu}</h4>
-                                  <p className="mb-0 text-break">
-                                    <strong>User:</strong>{" "}
-                                    {selectedGrill.User
-                                      ? `${selectedGrill.User.Nume} ${selectedGrill.User.Prenume}`
-                                      : "Unknown"}
-                                  </p>
-                                  <p className="mb-0 text-break">
-                                    <strong>Rating:</strong> {selectedGrill.Rating} Mici
-                                  </p>
+                                  <p className="mb-0 text-break"><strong>User:</strong> {selectedGrill.User ? `${selectedGrill.User.Nume} ${selectedGrill.User.Prenume}` : "Unknown"}</p>
+                                  <p className="mb-0 text-break"><strong>Rating:</strong> {selectedGrill.Rating} Mici</p>
                                 </div>
+
                                 {isOwnerOrAdmin && (
                                   <div className="d-flex gap-2">
                                     <button
                                       className="btn btn-danger"
                                       onClick={() => this.deleteGrill(selectedGrill._id)}
-                                      style={{
-                                        backgroundColor: "rgba(255,0,0,1)",
-                                        borderColor: "rgba(0,0,0,1)",
-                                        fontWeight: "bold",
-                                      }}
+                                      style={{ backgroundColor: "rgba(255,0,0,1)", borderColor: "rgba(0,0,0,1)", fontWeight: "bold" }}
                                     >
                                       Delete Post
                                     </button>
                                     <button
                                       className="btn btn-primary"
-                                      onClick={() =>
-                                        this.openGrillModal(selectedGrill, true)
-                                      }
-                                      style={{
-                                        backgroundColor: "rgba(172,86,5,1)",
-                                        borderColor: "rgba(0,0,0,1)",
-                                        fontWeight: "bold",
-                                      }}
+                                      onClick={() => this.openGrillModal(selectedGrill, true)}
+                                      style={{ backgroundColor: "rgba(172,86,5,1)", borderColor: "rgba(0,0,0,1)", fontWeight: "bold" }}
                                     >
                                       Edit Post
                                     </button>
@@ -531,16 +395,11 @@ export default class Grills extends Component {
                                 )}
                               </div>
 
-                              {/* Give Mici button */}
-                              {this.loggedInUserID &&
-                                selectedGrill.User?._id !== this.loggedInUserID && (
-                                  <button
-                                    className="btn btn-success mt-2"
-                                    onClick={() => this.increaseRating(selectedGrill)}
-                                  >
-                                    Give Mici
-                                  </button>
-                                )}
+                              {this.loggedInUserID && selectedGrill.User?._id !== this.loggedInUserID && (
+                                <button className="btn btn-success mt-2" onClick={() => this.increaseRating(selectedGrill)}>
+                                  Give Mici
+                                </button>
+                              )}
 
                               <div>
                                 <h5>Description</h5>
@@ -550,55 +409,33 @@ export default class Grills extends Component {
                           </div>
                         </div>
 
-                        {/* Mobile */}
+                        {/* Mobile View */}
                         <div className="d-flex d-md-none flex-column">
                           <h4 className="text-break">{selectedGrill.Titlu}</h4>
-                          <p className="text-break">
-                            <strong>User:</strong>{" "}
-                            {selectedGrill.User
-                              ? `${selectedGrill.User.Nume} ${selectedGrill.User.Prenume}`
-                              : "Unknown"}
-                          </p>
+                          <p className="text-break"><strong>User:</strong> {selectedGrill.User ? `${selectedGrill.User.Nume} ${selectedGrill.User.Prenume}` : "Unknown"}</p>
+
                           <img
                             src={`${import.meta.env.VITE_API_URL}/uploads/${selectedGrill.Image}`}
                             alt={selectedGrill.Titlu}
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover",
-                              borderRadius: "5px",
-                              marginBottom: "10px",
-                            }}
+                            style={{ width: "100%", objectFit: "cover", borderRadius: "5px", marginBottom: "10px" }}
                           />
+
                           <div className="d-flex justify-content-between align-items-center mb-3">
-                            <p className="mb-0 text-break">
-                              <strong>Rating:</strong> {selectedGrill.Rating} Mici
-                            </p>
+                            <p className="mb-0 text-break"><strong>Rating:</strong> {selectedGrill.Rating} Mici</p>
+
                             {isOwnerOrAdmin && (
                               <div className="d-flex flex-column flex-md-row gap-2">
                                 <button
                                   className="btn btn-danger btn-sm"
                                   onClick={() => this.deleteGrill(selectedGrill._id)}
-                                  style={{
-                                    backgroundColor: "rgba(255,0,0,1)",
-                                    borderColor: "rgba(0,0,0,1)",
-                                    fontWeight: "bold",
-                                    fontSize: "12px",
-                                  }}
+                                  style={{ backgroundColor: "rgba(255,0,0,1)", borderColor: "rgba(0,0,0,1)", fontWeight: "bold", fontSize: "12px" }}
                                 >
                                   Delete Post
                                 </button>
                                 <button
                                   className="btn btn-primary btn-sm"
-                                  onClick={() =>
-                                    this.openGrillModal(selectedGrill, true)
-                                  }
-                                  style={{
-                                    backgroundColor: "rgba(172,86,5,1)",
-                                    borderColor: "rgba(0,0,0,1)",
-                                    fontWeight: "bold",
-                                    fontSize: "12px",
-                                  }}
+                                  onClick={() => this.openGrillModal(selectedGrill, true)}
+                                  style={{ backgroundColor: "rgba(172,86,5,1)", borderColor: "rgba(0,0,0,1)", fontWeight: "bold", fontSize: "12px" }}
                                 >
                                   Edit Post
                                 </button>
@@ -606,16 +443,11 @@ export default class Grills extends Component {
                             )}
                           </div>
 
-                          {/* Give Mici button mobile */}
-                          {this.loggedInUserID &&
-                            selectedGrill.User?._id !== this.loggedInUserID && (
-                              <button
-                                className="btn btn-success btn-sm mb-2"
-                                onClick={() => this.increaseRating(selectedGrill)}
-                              >
-                                Give Mici
-                              </button>
-                            )}
+                          {this.loggedInUserID && selectedGrill.User?._id !== this.loggedInUserID && (
+                            <button className="btn btn-success btn-sm mb-2" onClick={() => this.increaseRating(selectedGrill)}>
+                              Give Mici
+                            </button>
+                          )}
 
                           <div>
                             <h5>Description</h5>
@@ -626,18 +458,11 @@ export default class Grills extends Component {
                     </>
                   )}
 
-                  {/* EDIT MODE */}
                   {editMode && (
                     <>
                       <div className="modal-header">
-                        <h5 className="modal-title">
-                          {selectedGrill ? "Edit Grill" : "Create New Grill"}
-                        </h5>
-                        <button
-                          type="button"
-                          className="btn-close"
-                          onClick={this.closeModal}
-                        ></button>
+                        <h5 className="modal-title">{selectedGrill ? "Edit Grill" : "Create New Grill"}</h5>
+                        <button type="button" className="btn-close" onClick={this.closeModal}></button>
                       </div>
                       <div className="modal-body">
                         {selectedGrill ? (
@@ -662,11 +487,12 @@ export default class Grills extends Component {
                 </div>
               </div>
             </div>
+
             {showModal && <div className="modal-backdrop fade show"></div>}
           </>
         )}
 
-        {/* Scroll-to-top button (desktop only) */}
+        {/* Scroll-to-top button */}
         {showScrollTop && (
           <button
             onClick={this.scrollToTop}

@@ -5,6 +5,7 @@ export default class CreateGrill extends Component {
   constructor(props) {
     super(props);
 
+
     this.state = {
       Titlu: "",
       Descriere: "",
@@ -30,6 +31,7 @@ export default class CreateGrill extends Component {
 
     if (file.size > maxSize) {
         e.target.value = null; // Clear the input
+        confirm("salut");
         alert("Image is too large! Maximum allowed size is 5MB.");
         return;
     }
@@ -50,13 +52,14 @@ export default class CreateGrill extends Component {
       .then(res => console.log(res.data))
       .catch(err => console.error(err));
 
-      // window.location.reload();
+      alert("Grill Posted!");
+      this.props.closeModal();
   }
 
   render() {
     return (
       <div>
-        <form onSubmit={this.onSubmit}>
+        <form onSubmit={this.onSubmit} encType="multipart/form-data">
           <div className="form-group">
             <label>Title: </label>
             <input type="text" required className="form-control" value={this.state.Titlu} onChange={this.onChangeTitlu} />
@@ -67,7 +70,7 @@ export default class CreateGrill extends Component {
           </div>
           <div className="form-group mt-3">
             <label>Image: </label>
-            <input type="file" required className="form-control" onChange={this.onChangeImage} />
+            <input type="file" required className="form-control" onChange={this.onChangeImage} onClick={(e) => e.stopPropagation()}  />
           </div>
           <div className="form-group mt-3">
             <input type="submit" value="Post Grill" className="btn btn-primary" style={{ backgroundColor: "rgba(29, 177, 41, 0.7)", borderColor: "rgba(0, 0, 0, 1)" , fontWeight: "bold"}} />

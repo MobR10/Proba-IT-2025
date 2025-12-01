@@ -14,7 +14,7 @@ export default class Profile extends Component {
       showModal: false,
       selectedGrill: null,
       editMode: false,
-      mobileIndex: 0, // For mobile slider
+      mobileIndex: 0, // Mobile slider index
     };
   }
 
@@ -61,26 +61,46 @@ export default class Profile extends Component {
     return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
   }
 
-  prevMobile = () => {
-    const { grills, mobileIndex } = this.state;
-    if (grills.length === 0) return;
-    const newIndex = (mobileIndex - 2 + grills.length) % grills.length;
-    this.setState({ mobileIndex: newIndex });
-  };
+  /* ---------------------------
+     MOBILE SLIDER FIXED LOGIC
+     Always show 2 grills:
+     index, index+1 (wrapped)
+  --------------------------- */
 
   nextMobile = () => {
     const { grills, mobileIndex } = this.state;
     if (grills.length === 0) return;
-    const newIndex = (mobileIndex + 2) % grills.length;
-    this.setState({ mobileIndex: newIndex });
+    this.setState({ mobileIndex: (mobileIndex + 1) % grills.length });
+  };
+
+  prevMobile = () => {
+    const { grills, mobileIndex } = this.state;
+    if (grills.length === 0) return;
+    this.setState({
+      mobileIndex: (mobileIndex - 1 + grills.length) % grills.length,
+    });
+  };
+
+  getMobileGrills = () => {
+    const { grills, mobileIndex } = this.state;
+    if (grills.length === 0) return [];
+
+    return [
+      grills[mobileIndex],
+      grills[(mobileIndex + 1) % grills.length],
+    ];
   };
 
   render() {
-    const { grills, user, showModal, selectedGrill, editMode, mobileIndex } =
-      this.state;
+    const {
+      grills,
+      user,
+      showModal,
+      selectedGrill,
+      editMode,
+    } = this.state;
 
-    // Slice 2 grills per mobile slide
-    const mobileGrills = grills.slice(mobileIndex, mobileIndex + 2);
+    const mobileGrills = this.getMobileGrills();
 
     return (
       <div className="container mt-3 mb-3">
@@ -165,51 +185,58 @@ export default class Profile extends Component {
 
         {/* Mobile Slider */}
         {mobileGrills.length > 0 && (
-          <div className="d-flex d-md-none flex-column align-items-center" 
-          style={{
-                  backgroundColor: "rgba(99, 1, 1, 1)",
-                  padding: "10px",
-                  borderRadius: "10px",
-                }}>
+          <div
+            className="d-flex d-md-none flex-column align-items-center"
+            style={{
+              backgroundColor: "rgba(99, 1, 1, 1)",
+              padding: "10px",
+              borderRadius: "10px",
+            }}
+          >
             <h2 className="mb-4 text-white text-center">My Grills</h2>
+
             <div className="d-flex align-items-center mb-3 gap-2">
               <button className="btn btn-secondary" onClick={this.prevMobile}>
                 &lt;
               </button>
 
-              <div
-                className="d-flex gap-2"
-              >
-                {mobileGrills.map((grill) => (
-                  <div
-                    key={grill._id}
-                    className="card shadow-sm text-center"
-                    style={{ width: "120px", cursor: "pointer" }}
-                    onClick={() => this.openGrillModal(grill, false)}
-                  >
-                    <img
-                      src={`${import.meta.env.VITE_API_URL}/uploads/${grill.Image}`}
-                      alt={grill.Titlu}
-                      className="card-img-top"
-                      style={{
-                        width: "100%",
-                        height: "100px",
-                        objectFit: "cover",
-                      }}
-                    />
-                    <div className="card-body">
-                      <h5 className="card-title" style={{ fontSize: "14px" }}>
-                        {this.truncateText(grill.Titlu, 20)}
-                      </h5>
-                      <p style={{ fontSize: "12px" }}>
-                        <strong>Rating:</strong> {grill.Rating} Mici
-                      </p>
-                      <p style={{ fontSize: "12px" }}>
-                        {this.truncateText(grill.Descriere, 40)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+              <div className="d-flex gap-2">
+                {mobileGrills.map(
+                  (grill) =>
+                    grill && (
+                      <div
+                        key={grill._id}
+                        className="card shadow-sm text-center"
+                        style={{ width: "120px", cursor: "pointer" }}
+                        onClick={() => this.openGrillModal(grill, false)}
+                      >
+                        <img
+                          src={`${import.meta.env.VITE_API_URL}/uploads/${grill.Image}`}
+                          alt={grill.Titlu}
+                          className="card-img-top"
+                          style={{
+                            width: "100%",
+                            height: "100px",
+                            objectFit: "cover",
+                          }}
+                        />
+                        <div className="card-body">
+                          <h5
+                            className="card-title"
+                            style={{ fontSize: "14px" }}
+                          >
+                            {this.truncateText(grill.Titlu, 20)}
+                          </h5>
+                          <p style={{ fontSize: "12px" }}>
+                            <strong>Rating:</strong> {grill.Rating} Mici
+                          </p>
+                          <p style={{ fontSize: "12px" }}>
+                            {this.truncateText(grill.Descriere, 40)}
+                          </p>
+                        </div>
+                      </div>
+                    )
+                )}
               </div>
 
               <button className="btn btn-secondary" onClick={this.nextMobile}>
@@ -258,19 +285,11 @@ export default class Profile extends Component {
                               <h4 style={{ wordWrap: "break-word" }}>
                                 {selectedGrill.Titlu}
                               </h4>
-                              <p
-                                className="mb-0"
-                                style={{ wordWrap: "break-word" }}
-                              >
-                                <strong>User:</strong> {user.Nume}{" "}
-                                {user.Prenume}
+                              <p className="mb-0" style={{ wordWrap: "break-word" }}>
+                                <strong>User:</strong> {user.Nume} {user.Prenume}
                               </p>
-                              <p
-                                className="mb-0"
-                                style={{ wordWrap: "break-word" }}
-                              >
-                                <strong>Rating:</strong> {selectedGrill.Rating}{" "}
-                                Mici
+                              <p className="mb-0" style={{ wordWrap: "break-word" }}>
+                                <strong>Rating:</strong> {selectedGrill.Rating} Mici
                               </p>
                             </div>
                             <div>
@@ -312,7 +331,7 @@ export default class Profile extends Component {
                       </div>
                     </div>
 
-                    {/* Mobile inside modal */}
+                    {/* Mobile Modal */}
                     <div className="d-flex d-md-none flex-column">
                       <h4 style={{ wordWrap: "break-word" }}>
                         {selectedGrill.Titlu}
@@ -386,6 +405,7 @@ export default class Profile extends Component {
                       onClick={this.closeModal}
                     ></button>
                   </div>
+
                   <div className="modal-body">
                     {selectedGrill ? (
                       <EditGrill

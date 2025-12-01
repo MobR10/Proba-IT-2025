@@ -82,7 +82,7 @@ export default class EditGrill extends Component {
   render() {
     return (
       <div>
-        <form onSubmit={this.onSubmit}>
+        <form onSubmit={this.onSubmit} encType="multipart/form-data">
           <div className="form-group">
             <label>Title: </label>
             <input type="text" className="form-control" value={this.state.Titlu} onChange={this.onChangeTitlu} />
@@ -93,7 +93,7 @@ export default class EditGrill extends Component {
           </div>
           <div className="form-group mt-3">
             <label>Image: </label>
-            <input type="file" className="form-control" onChange={this.onChangeImage} />
+            <input type="file" className="form-control" onChange={this.onChangeImage} onClick={(e) => e.stopPropagation()}  />
           </div>
           <div className="form-group mt-3">
             <input type="submit" value="Update Grill" className="btn btn-primary" style={{ backgroundColor: "rgba(29, 177, 41, 0.7)", borderColor: "rgba(0, 0, 0, 1)" , fontWeight: "bold"}}/>
