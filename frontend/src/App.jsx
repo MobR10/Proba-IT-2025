@@ -10,9 +10,9 @@ import Home from "./components/home.component";
 import Grills from "./components/grills.component";
 import Login from "./components/login.component";
 import Register from "./components/register.component";
+import ForgotPassword from './components/forgot-password.component';
 
 import Profile from "./components/profile.component";
-import CreateGrill from './components/create-grill.component';
 import Footer from './components/footer.component';
 
 function App() {
@@ -69,6 +69,7 @@ function App() {
           <Route path="/login" element={<Login setLoggedInUser={setLoggedInUser}/>}/>
           <Route path="/register" element={<Register/>}/>
           <Route path="/profile" element={<Profile/>}/>
+          <Route path="/forgotPassword" element={<ForgotPassword/>}/>
         </Routes>
         </main> 
         <Footer/>

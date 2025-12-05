@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-import img1 from "../assets/Group 110.png";
-
 export default class Login extends Component {
   constructor(props) {
     super(props);
@@ -111,6 +109,13 @@ export default class Login extends Component {
     No account? Press here to{" "}
     <Link to="/register" className="text-success">
       sign up
+    </Link>.
+  </p>
+  
+  <p className="text-center">
+    Forgot your password? Press here to{" "}
+    <Link to="/forgotPassword" className="text-success">
+      reset it
     </Link>.
   </p>
 </form>

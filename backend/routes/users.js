@@ -2,7 +2,7 @@ const router = require("express").Router();
 let User = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
+const nodemailer = require('nodemailer');
 
 router.route('/').get((req, res) => {
   User.find()
@@ -82,9 +82,10 @@ router.route('/findByEmail').get((req, res) => {
   User.findOne({ Email: email }) // Query the database for a user with the given email
     .then(user => {
       if (user) {
-        res.json(user); // Return the user if found
+        res.json({ _id: user._id, Nume: user.Nume, Prenume: user.Prenume, Rol: user.Rol }); // Return the user if found
       } else {
-        res.status(404).json('Error: User not found');
+        // res.status(404).json('Error: User not found');
+        res.json(null); // Return null if user not found
       }
     })
     .catch(err => res.status(400).json('Error: ' + err));
@@ -132,6 +133,39 @@ router.get('/verify', async (req, res) => {
   } catch (err) {
     res.status(401).json('Invalid token');
   }
+});
+
+router.route('/createPassToken').get((req, res) => {
+  jwt.sign({}, process.env.JWT_SECRET || "your_secret_key", { expiresIn: '5m' }, (err, token) => {
+    if (err) {
+      return res.status(500).json('Error creating token: ' + err);
+    }
+
+    res.json({"message": "Token to reset password created succesfully!", "token": token});
+});
+});
+
+router.route('/verifyPassToken/:token').get((req, res) => {
+  const token = jwt.verify(req.params.token, process.env.JWT_SECRET || "your_secret_key"); // Get the token from the parameteres
+
+  if(!token){
+    return res.status(400).json('Error: Invalid token');
+  }
+  else res.json({status: 'ok'});
+
+});
+
+// fix this
+router.route('sendResetEmail').get((req, res) => {
+  const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port:  587,
+  secure: false, // true for 465, false for 587
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS
+  }
+});
 });
 
 module.exports = router;
