@@ -41,11 +41,17 @@ export default class Login extends Component {
     axios
       .post(`${import.meta.env.VITE_API_URL}/users/login`, user)
       .then((res) => {
-        // Backend should return user info if login is successful
-        if (res.data && res.data.user) {
-          localStorage.setItem("loggedIn", "true");
+        // Backend should return user info and token if login is successful
+        if (res.data && res.data.token && res.data.user) {
+          localStorage.setItem("token", res.data.token);
           localStorage.setItem("userID", res.data.user._id);
           localStorage.setItem("userRole", res.data.user.Rol);
+          
+          // Set logged in user in App state
+          if (this.props.setLoggedInUser) {
+            this.props.setLoggedInUser(res.data.user.Prenume);
+          }
+          
           window.location = "/"; // Redirect
         } else {
           alert("Invalid email or password");

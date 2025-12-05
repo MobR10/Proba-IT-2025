@@ -5,17 +5,22 @@ export default class Navbar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loggedIn: localStorage.getItem("loggedIn") === "true",
-      userID: localStorage.getItem("userID") || null,
+      loggedIn: localStorage.getItem("token") !== null,
     };
   }
 
+  componentDidUpdate(prevProps) {
+    // Update navbar when loggedInUser prop changes
+    if (prevProps.loggedInUser !== this.props.loggedInUser) {
+      this.setState({ loggedIn: this.props.loggedInUser !== null });
+    }
+  }
+
   handleLogout = () => {
-    localStorage.removeItem("loggedIn");
-    localStorage.removeItem("userID");
-    localStorage.removeItem("userRole");
-    this.setState({ loggedIn: false, userID: null });
-    window.location = "/";
+    if (this.props.handleLogout) {
+      this.props.handleLogout();
+    }
+    this.collapseNavbar();
   };
 
   // Collapse the navbar on mobile
@@ -88,7 +93,6 @@ export default class Navbar extends Component {
                       style={{ cursor: "pointer" }}
                       onClick={() => {
                         this.handleLogout();
-                        this.collapseNavbar();
                       }}
                     >
                       Logout
