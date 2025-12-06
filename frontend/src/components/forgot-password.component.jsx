@@ -29,28 +29,38 @@ export default class ForgotPassword extends Component {
     })
     .then(res => {
         // res.data is the found user
-        if(res.data != null)
-        axios.get(`${import.meta.env.VITE_API_URL}/users/createPassToken`).then
-        (res => {
+        if(res.data.found == false){
+          // console.log("User not found")
+          // do nothing, just show the generic message below
+        }
+        if(res.data.found == true)
+          axios.post(`${import.meta.env.VITE_API_URL}/users/createPassToken`, {email: this.state.email})
+          .then(res => {
+          // building the body to send to the backend route for sending the reset link email
+          const body = {
+            email: this.state.email,
+            token: res.data.token,
+          }
+          axios.post(`${import.meta.env.VITE_API_URL}/users/sendResetEmail`, body)
+          .then(res =>{
             // console.log(res.data);
-            // Build a reset link to your frontend reset page
-        
-        
-        axios.get(`${import.meta.env.VITE_API_URL}/users/sendResetEmail`, {
-            params: { email: this.state.email, token: res.data.token }
+            // do nothing, just show the generic message below
+          })
+          .catch(err => {
+            // console.error('Error sending reset email:', err.response?.data || err.message);
+          });
+          })
+          .catch(err => {
+              // console.error('Error creating password reset token:', err.response?.data || err.message);
+          });
+          alert('Dacă email-ul este înregistrat, vei primi un email.');
         })
-        
-        }).catch(err => {
-            console.error('Error creating password reset token:', err.response?.data || err.message);
-        });
-        alert('If that email is registered, you will receive reset instructions.');
-    })
     .catch(err => {
-        if (err.response?.status === 404) {
+        if (err.response?.status === 500) {
         // still show generic message to avoid enumeration
-        alert('If that email is registered, you will receive reset instructions.');
+        alert('Dacă email-ul este înregistrat, vei primi un email.');
         } else {
-        alert('Something went wrong. Try again later.');
+        alert('Ceva nu a mers bine. Încearcă mai târziu.');
         }
   });
 }

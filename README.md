@@ -1,8 +1,18 @@
 # Proba-IT-2025
   
 ## How to connect to MongoDB
-Log into MongoDB Atlas and copy the connection string for your cluster. After that, create the ```.env``` file inside the backend directory.
+Log into MongoDB Atlas and copy the connection string for your cluster. Make sure to add your ip address to the whitelist of the cluster.
+After that, create the ```.env``` file inside the backend directory.
 Inside ```.env``` add the following line: ```ATALS_URI='your_connection_string'```.
+
+## backend/.env file config
+For the forgot password bonus implementation, you need to add the following fields in the .env file from backend
+```
+SMTP_HOST=smtp.your_email_service.com (example for gmail: smtp.gmail.com or yahoo smtp.ymail.com)
+SMTP_USER=your_email@service.com
+SMTP_PASS=your_pass_generated_from_your_service (for more info, look into SMTP PASS)
+FRONTEND_URL=http://your_frontend_ip_address:your_port
+```
 
 ## How to install dependecies
 Both frontend and backend have their own dependencies. You need to run ```npm install``` in your terminal from both ```/backend``` and ```/frontend``` prior to trying to start them.
@@ -28,6 +38,8 @@ Pages:
 - Register
 - Login
 - Profile
+- Forgot Password
+- Reset Password
 
 Responsiveness:
 - The app has desktop, medium-sized devices and mobile versions
@@ -47,6 +59,8 @@ Functionalities:
 Bonuses: 
 - only users with admin role can edit/delete any post
 - users can upload images
+- forgot password
+- give mici button, but no limit :(
 
 Short description of the code:
 ### Pages

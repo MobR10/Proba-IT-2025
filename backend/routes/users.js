@@ -82,10 +82,12 @@ router.route('/findByEmail').get((req, res) => {
   User.findOne({ Email: email }) // Query the database for a user with the given email
     .then(user => {
       if (user) {
-        res.json({ _id: user._id, Nume: user.Nume, Prenume: user.Prenume, Rol: user.Rol }); // Return the user if found
+        res.json({
+          found: true, 
+          user: { _id: user._id, Nume: user.Nume, Prenume: user.Prenume, Rol: user.Rol } }); // Return the user if found
       } else {
         // res.status(404).json('Error: User not found');
-        res.json(null); // Return null if user not found
+        res.json({found: false}); // Return null if user not found
       }
     })
     .catch(err => res.status(400).json('Error: ' + err));
@@ -135,8 +137,8 @@ router.get('/verify', async (req, res) => {
   }
 });
 
-router.route('/createPassToken').get((req, res) => {
-  jwt.sign({}, process.env.JWT_SECRET || "your_secret_key", { expiresIn: '5m' }, (err, token) => {
+router.route('/createPassToken').post((req, res) => {
+  jwt.sign({'reason': 'forgotPassword',"email":req.body.email}, process.env.JWT_SECRET || "your_secret_key", { expiresIn: '5m' }, (err, token) => {
     if (err) {
       return res.status(500).json('Error creating token: ' + err);
     }
@@ -146,26 +148,84 @@ router.route('/createPassToken').get((req, res) => {
 });
 
 router.route('/verifyPassToken/:token').get((req, res) => {
-  const token = jwt.verify(req.params.token, process.env.JWT_SECRET || "your_secret_key"); // Get the token from the parameteres
-
-  if(!token){
-    return res.status(400).json('Error: Invalid token');
+  let token= null;
+  try{
+    token = jwt.verify(req.params.token, process.env.JWT_SECRET || "your_secret_key"); // Get the token from the parameteres
+    }catch(err){
+      return res.json({status: 'invalid'});
   }
-  else res.json({status: 'ok'});
+
+  if(token.reason !== 'forgotPassword'){
+      return res.json({status: "invalid",message:"ai token valid, dar nu potrivit haha"});
+  }
+  else{
+    return res.json({status: 'ok'});
+  }
 
 });
 
 // fix this
-router.route('sendResetEmail').get((req, res) => {
+router.route('/sendResetEmail').post(async (req, res) => {
+  const { email, token } = req.body; // Extract email and token from the request body
+
+  // Create a Nodemailer transporter
   const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port:  587,
-  secure: false, // true for 465, false for 587
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
+    host: process.env.SMTP_HOST,
+    port: 465, // Use 587 for TLS, or 465 for SSL
+    secure: true, // Set to true if using port 465
+    auth: {
+      user: process.env.SMTP_USER, // SMTP username
+      pass: process.env.SMTP_PASS, // SMTP password
+    },
+  });
+
+  const mailOptions = {
+    from: `"Pimp Your Grill" <${process.env.SMTP_USER}>`,
+    to: email, 
+    subject: "Password Reset Request",
+    html: `
+      <p>Salut</p>
+      <p>Ai cerut să-ți resetezi parola. Poți face asta apăsând pe link-ul de mai jos:</p>
+      <a href="${process.env.FRONTEND_URL}/resetPassword/${token}">Reset Password</a>
+      <p>Dacă nu ai solicitat acest lucru, te rog să ignori acest email.</p>
+    `, 
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    res.json({ sent: "true", message: "Reset email sent successfully!"});
+  } catch (err) {
+    res.json({ sent: "false", message: "Failed to send reset email" });
+    // res.status(500).json({ error: "Failed to send reset email" });
   }
 });
+
+router.route('/resetPassword').post(async (req , res) =>{
+
+  const {password, token} = req.body;
+
+  let validation = null;
+
+  try{
+    validation = jwt.verify(token, process.env.JWT_SECRET || "your_secret_key");
+    }catch(err){
+      return res.json({status: 'invalid'});
+  }
+
+  if(validation.reason !== 'forgotPassword'){
+      return res.json({status: "invalid",message:"ai token valid, dar nu potrivit haha"});
+  }
+  else{
+    const user = await User.findOne({Email: validation.email});
+    if(user){
+      user.Parola = await bcrypt.hash(password,10);
+      await user.save();
+    }
+    return res.json({status: 'ok'});
+  }
+
+
+
 });
 
 module.exports = router;

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {BrowserRouter as Router,Routes,Route} from "react-router-dom";
+import {useParams} from "react-router-dom";
+
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -11,9 +13,15 @@ import Grills from "./components/grills.component";
 import Login from "./components/login.component";
 import Register from "./components/register.component";
 import ForgotPassword from './components/forgot-password.component';
+import ResetPassword from './components/reset-password.component';
 
 import Profile from "./components/profile.component";
 import Footer from './components/footer.component';
+
+function ResetPasswordWrapper(){
+  const {token} = useParams();
+  return <ResetPassword token={token} />;
+}
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState(null);
@@ -70,6 +78,7 @@ function App() {
           <Route path="/register" element={<Register/>}/>
           <Route path="/profile" element={<Profile/>}/>
           <Route path="/forgotPassword" element={<ForgotPassword/>}/>
+          <Route path="/resetPassword/:token" element={<ResetPasswordWrapper/>}/>
         </Routes>
         </main> 
         <Footer/>

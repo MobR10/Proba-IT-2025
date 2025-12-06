@@ -17,6 +17,12 @@ export default class Login extends Component {
     };
   }
 
+  componentDidMount(){
+    if(localStorage.getItem("loggedInUser") != null){
+      window.location = '/';
+    }
+  }
+
   onChangeEmail(e) {
     this.setState({ email: e.target.value });
   }
@@ -26,44 +32,48 @@ export default class Login extends Component {
   }
 
   onSubmit(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    const user = {
-      email: this.state.email,
-      password: this.state.password,
-    };
+  const user = {
+    email: this.state.email,
+    password: this.state.password,
+  };
 
-    console.log("USER INPUT", user);
+  console.log("USER INPUT", user);
 
-    // Send login request to backend
-    axios
-      .post(`${import.meta.env.VITE_API_URL}/users/login`, user)
-      .then((res) => {
-        // Backend should return user info and token if login is successful
-        if (res.data && res.data.token && res.data.user) {
-          localStorage.setItem("token", res.data.token);
-          localStorage.setItem("userID", res.data.user._id);
-          localStorage.setItem("userRole", res.data.user.Rol);
-          
-          // Set logged in user in App state
-          if (this.props.setLoggedInUser) {
-            this.props.setLoggedInUser(res.data.user.Prenume);
-          }
-          
-          window.location = "/"; // Redirect
-        } else {
-          alert("Invalid email or password");
+  // Send login request to backend
+  axios
+    .post(`${import.meta.env.VITE_API_URL}/users/login`, user)
+    .then((res) => {
+      // Backend should return user info and token if login is successful
+      if (res.data && res.data.token && res.data.user) {
+        // Save all items to localStorage before redirecting
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("userID", res.data.user._id);
+        localStorage.setItem("userRole", res.data.user.Rol);
+        localStorage.setItem("loggedInUser", res.data.user.Prenume);
+
+        // Set logged in user in App state
+        if (this.props.setLoggedInUser) {
+          this.props.setLoggedInUser(res.data.user.Prenume);
         }
-      })
-      .catch((err) => {
-        console.error(err.response?.data || err.message);
+
+        // Redirect after all localStorage calls are complete
+        console.log("All localStorage items set. Redirecting...");
+        window.location = "/"; // Redirect
+      } else {
         alert("Invalid email or password");
-      });
-  }
+      }
+    })
+    .catch((err) => {
+      console.error(err.response?.data || err.message);
+      alert("Invalid email or password");
+    });
+}
 
   render() {
     return (
-      <div className="container">
+      <div className="container mb-5">
         <form
   onSubmit={this.onSubmit}
   className="text-white p-5 rounded mx-auto mt-5"
