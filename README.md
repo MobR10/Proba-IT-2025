@@ -18,10 +18,10 @@ FRONTEND_URL=http://your_frontend_ip_address:your_port
 Both frontend and backend have their own dependencies. You need to run ```npm install``` in your terminal from both ```/backend``` and ```/frontend``` prior to trying to start them.
 
 ## How to start the backend
-From your terminal, make sure you first navigate to ```root/backend```. Then run the following command ```nodemon server``` . Nodemon makes it so the backend refreshes with every CTRL+S.
+From your terminal, make sure you first navigate to ```/backend```. Then run the following command ```nodemon server``` . Nodemon makes it so the backend refreshes with every CTRL+S. Or you can use ```npm start```.
 
 ## How to start the frontend
-Similar to backend, navigate to ```root/frontend```. Then run ```npm run dev```
+Similar to backend, navigate to ```/frontend```. Then run ```npm run dev```
 
 ## How to bind frontend to the backend
 Inside the frontend .jsx components, the urls that make the http requests to the backend look like this: ``` URL=`${import.meta.env.VITE_API_URL}/` ``` followed by the rest of the route. I used this instead of hardcoding ```localhost:port```
