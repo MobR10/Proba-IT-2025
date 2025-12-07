@@ -141,3 +141,13 @@ Simple forms styled using Bootstrap. onSubmit function sends a POST operation to
 
 ### Edit Post
 - Users can choose not to edit anything or edit what they want, including Title, Description and change the picture
+
+### How I managed some of the implementations
+# Login
+On the webpage, the frontend sends the requests to the backend. Then backend checks for the existing email in the database: if it doesn't exist, then it notifies the frontend, which further alerts the user about this. If the email exists, then it checks the hashed password given with the hashed password from the databse in order to determine if the user has introduced the right password.
+
+## Forgot password
+There are multiple webpages:
+- where you introduce the email
+- where you introduce your new password
+Frontend sends the requested email to the backend, which checks for its existance. Whether or not there is an user registered with that email, the frontend displays the same message, something like "If your email is registered, then you will receive a password reset link on your email". Anyway, if you have an account registered with a valid email, you will receive a link valid for 5m to reset your password. That link goes to a frontend webpage with an url which has a jwt token specifically created for this purpose when you clicked on "send reset link". So the url looks something like "http://ip:port/resetPassword/token" . When you try to access this page, the frontend sends a request to the backend to check this token from the url query parameters. The backend validates and reads the contents of the decrypted token. If the token is both valid and has the appropiate content, then the page loads the form for the user to fill with the new password and confirm new password. Afterwards the process is simple: the backend receives the information and changes the corresponding user's password into the new password. 
